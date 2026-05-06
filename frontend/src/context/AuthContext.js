@@ -54,13 +54,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   const toggleWishlist = async (productId) => {
-    if (!isAuthenticated) {
+    if (!user) {
       router.push('/login');
       return;
     }
     try {
-      const { data } = await api.post(`/users/wishlist/toggle/${productId}`);
-      setUser(data);
+      await api.post(`/users/wishlist/toggle/${productId}`);
+      // Fetch fresh user data to ensure state is perfectly in sync
+      const { data: updatedUser } = await api.get('/auth/me');
+      setUser(updatedUser);
     } catch (error) {
       console.error("Failed to toggle wishlist", error);
     }

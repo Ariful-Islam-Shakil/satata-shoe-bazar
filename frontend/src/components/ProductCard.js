@@ -5,7 +5,8 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function ProductCard({ product }) {
   const { user, toggleWishlist } = useAuth();
-  const isWishlisted = user?.wishlist?.includes(product._id);
+  const productId = product._id || product.id;
+  const isWishlisted = user?.wishlist?.includes(productId);
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white">
@@ -18,9 +19,10 @@ export default function ProductCard({ product }) {
         <button
           onClick={(e) => {
             e.preventDefault();
-            toggleWishlist(product._id);
+            e.stopPropagation();
+            toggleWishlist(productId);
           }}
-          className="absolute top-2 right-2 p-1.5 rounded-full bg-white shadow-sm hover:bg-gray-100 z-10"
+          className="absolute top-2 right-2 p-1.5 rounded-full bg-white shadow-sm hover:bg-gray-100 z-30"
         >
           {isWishlisted ? (
             <HeartIconSolid className="h-5 w-5 text-red-500" />
@@ -31,7 +33,7 @@ export default function ProductCard({ product }) {
       </div>
       <div className="flex flex-1 flex-col space-y-2 p-4">
         <h3 className="text-sm font-medium text-gray-900">
-          <Link href={`/product/${product._id}`}>
+          <Link href={`/product/${productId}`}>
             <span aria-hidden="true" className="absolute inset-0" />
             {product.name}
           </Link>

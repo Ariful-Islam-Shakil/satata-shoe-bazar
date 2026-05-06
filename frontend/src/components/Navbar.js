@@ -29,8 +29,13 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <Link href="/wishlist" className="p-2 text-gray-400 hover:text-gray-500">
+            <Link href="/wishlist" className="p-2 text-gray-400 hover:text-gray-500 relative">
               <HeartIcon className="h-6 w-6" />
+              {user?.wishlist?.length > 0 && (
+                <span className="absolute top-0 right-0 block h-4 w-4 rounded-full bg-indigo-500 ring-2 ring-white text-[10px] text-white text-center leading-4">
+                  {user.wishlist.length}
+                </span>
+              )}
             </Link>
             <Link href="/cart" className="p-2 text-gray-400 hover:text-gray-500 relative">
               <ShoppingCartIcon className="h-6 w-6" />

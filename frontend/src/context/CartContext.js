@@ -21,9 +21,10 @@ export const CartProvider = ({ children }) => {
   }, [cartItems]);
 
   const addToCart = (product, size, quantity = 1) => {
+    const productId = product._id || product.id;
     setCartItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex(
-        (item) => item._id === product._id && item.selectedSize === size
+        (item) => (item._id || item.id) === productId && item.selectedSize === size
       );
 
       if (existingItemIndex > -1) {
@@ -38,7 +39,7 @@ export const CartProvider = ({ children }) => {
 
   const removeFromCart = (productId, size) => {
     setCartItems((prevItems) => 
-      prevItems.filter((item) => !(item._id === productId && item.selectedSize === size))
+      prevItems.filter((item) => !((item._id || item.id) === productId && item.selectedSize === size))
     );
   };
 
@@ -47,7 +48,7 @@ export const CartProvider = ({ children }) => {
     setCartItems((prevItems) => {
       const newItems = [...prevItems];
       const itemIndex = newItems.findIndex(
-        (item) => item._id === productId && item.selectedSize === size
+        (item) => (item._id || item.id) === productId && item.selectedSize === size
       );
       if (itemIndex > -1) {
         newItems[itemIndex].quantity = quantity;

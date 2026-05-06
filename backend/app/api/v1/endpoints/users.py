@@ -23,7 +23,13 @@ async def toggle_wishlist_item(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
-    if product_id in current_user.wishlist:
+    # Check if product is already in wishlist
+    user_with_product = await db.db.users.find_one({
+        "email": current_user.email,
+        "wishlist": product_id
+    })
+    
+    if user_with_product:
         # Remove from wishlist
         await db.db.users.update_one(
             {"email": current_user.email},
@@ -36,9 +42,10 @@ async def toggle_wishlist_item(
             {"$addToSet": {"wishlist": product_id}}
         )
     
-    updated_user = await db.db.users.find_one({"email": current_user.email})
-    updated_user["_id"] = str(updated_user["_id"])
-    return updated_user
+    # Get the final updated user
+    updated_user_doc = await db.db.users.find_one({"email": current_user.email})
+    updated_user_doc["_id"] = str(updated_user_doc["_id"])
+    return updated_user_doc
 
 @router.get("/wishlist", response_model=List[Any])
 async def get_wishlist_items(

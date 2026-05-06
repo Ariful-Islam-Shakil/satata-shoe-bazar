@@ -4,12 +4,15 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import api from '@/lib/api';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import { HeartIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import Reviews from '@/components/Reviews';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const { addToCart } = useCart();
+  const { user, toggleWishlist } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState(null);
@@ -99,9 +102,14 @@ export default function ProductDetailPage() {
 
               <button
                 type="button"
+                onClick={() => toggleWishlist(product._id || product.id)}
                 className="flex items-center justify-center rounded-md py-3 px-3 text-gray-400 hover:bg-gray-100 hover:text-gray-500 border border-gray-200"
               >
-                <HeartIcon className="h-6 w-6 flex-shrink-0" aria-hidden="true" />
+                {user?.wishlist?.includes(product._id || product.id) ? (
+                  <HeartIconSolid className="h-6 w-6 flex-shrink-0 text-red-500" aria-hidden="true" />
+                ) : (
+                  <HeartIcon className="h-6 w-6 flex-shrink-0" aria-hidden="true" />
+                )}
                 <span className="sr-only">Add to favorites</span>
               </button>
             </div>
