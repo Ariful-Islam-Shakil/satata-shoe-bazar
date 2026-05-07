@@ -17,27 +17,40 @@ export default function NewProductPage() {
     sizes: '40,41,42,43',
     colors: 'Black,White,Brown',
     stock: 0,
-    images: '',
   });
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFileChange = (e) => {
+    setSelectedFiles(Array.from(e.target.files));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const productData = {
-        ...formData,
-        price: parseFloat(formData.price),
-        stock: parseInt(formData.stock),
-        sizes: formData.sizes.split(',').map(s => parseInt(s.trim())),
-        colors: formData.colors.split(',').map(c => c.trim()),
-        images: formData.images ? formData.images.split(',').map(i => i.trim()) : [],
-      };
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('description', formData.description);
+      data.append('price', formData.price);
+      data.append('brand', formData.brand);
+      data.append('category', formData.category);
+      data.append('sizes', formData.sizes);
+      data.append('colors', formData.colors);
+      data.append('stock', formData.stock);
       
-      await api.post('/products', productData);
+      selectedFiles.forEach(file => {
+        data.append('files', file);
+      });
+      
+      await api.post('/products', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       router.push('/admin/products');
     } catch (error) {
       alert(error.response?.data?.detail || 'Failed to create product');
@@ -100,8 +113,20 @@ export default function NewProductPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Image URLs (comma separated)</label>
-            <input type="text" name="images" value={formData.images} onChange={handleChange} placeholder="http://..., http://..." className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" />
+            <label className="block text-sm font-medium text-gray-700">Product Images</label>
+            <input 
+              type="file" 
+              name="images" 
+              multiple 
+              onChange={handleFileChange} 
+              accept="image/*"
+              className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" 
+            />
+            {selectedFiles.length > 0 && (
+              <p className="mt-2 text-sm text-gray-500">
+                {selectedFiles.length} file(s) selected
+              </p>
+            )}
           </div>
 
           <div className="flex justify-end">

@@ -1,10 +1,13 @@
 from typing import Any, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, File, UploadFile, Form
 from app.db.mongodb import db
 from app.schemas.product import Product, ProductCreate, ProductUpdate
 from app.api import deps
 from bson import ObjectId
 from datetime import datetime
+import os
+import uuid
+import json
 
 router = APIRouter()
 
@@ -65,15 +68,53 @@ async def get_product(id: str) -> Any:
 @router.post("/", response_model=Product, status_code=status.HTTP_201_CREATED)
 async def create_product(
     *,
-    product_in: ProductCreate,
+    name: str = Form(...),
+    description: str = Form(...),
+    price: float = Form(...),
+    brand: str = Form(...),
+    category: str = Form(...),
+    sizes: str = Form(...), # Comma separated
+    colors: str = Form(...), # Comma separated
+    stock: int = Form(...),
+    files: List[UploadFile] = File(...),
     current_admin: Any = Depends(deps.get_current_active_admin)
 ) -> Any:
     """
     Create new product (Admin only).
     """
-    product_dict = product_in.model_dump()
-    product_dict["created_at"] = datetime.utcnow()
-    product_dict["updated_at"] = datetime.utcnow()
+    # Save images
+    upload_dir = "../frontend/public/photos"
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+        
+    image_urls = []
+    for file in files:
+        extension = file.filename.split(".")[-1].lower()
+        if extension not in ["jpg", "jpeg", "png", "gif", "webp"]:
+            continue # Or raise error
+        
+        filename = f"{uuid.uuid4()}.{extension}"
+        file_path = os.path.join(upload_dir, filename)
+        
+        with open(file_path, "wb") as buffer:
+            content = await file.read()
+            buffer.write(content)
+        
+        image_urls.append(f"/photos/{filename}")
+
+    product_dict = {
+        "name": name,
+        "description": description,
+        "price": price,
+        "brand": brand,
+        "category": category,
+        "sizes": [int(s.strip()) for s in sizes.split(",") if s.strip()],
+        "colors": [c.strip() for c in colors.split(",") if c.strip()],
+        "stock": stock,
+        "images": image_urls,
+        "created_at": datetime.utcnow(),
+        "updated_at": datetime.utcnow()
+    }
     
     new_product = await db.db.products.insert_one(product_dict)
     created_product = await db.db.products.find_one({"_id": new_product.inserted_id})
@@ -124,6 +165,17 @@ async def delete_product(
     
     if not deleted_product:
         raise HTTPException(status_code=404, detail="Product not found")
+    
+    # Delete images from filesystem
+    if "images" in deleted_product:
+        for img_url in deleted_product["images"]:
+            if img_url.startswith("/photos/"):
+                file_path = os.path.join("../frontend/public", img_url.lstrip("/"))
+                if os.path.exists(file_path):
+                    try:
+                        os.remove(file_path)
+                    except Exception as e:
+                        print(f"Failed to delete photo {file_path}: {e}")
         
     deleted_product["_id"] = str(deleted_product["_id"])
     return deleted_product
