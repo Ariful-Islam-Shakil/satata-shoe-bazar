@@ -65,6 +65,19 @@ async def get_my_orders(
         o["_id"] = str(o["_id"])
     return orders
 
+@router.get("/all", response_model=List[Order])
+async def get_all_orders(
+    current_admin: Any = Depends(deps.get_current_active_admin)
+) -> Any:
+    """
+    Retrieve all orders (Admin only).
+    """
+    orders_cursor = db.db.orders.find().sort("created_at", -1)
+    orders = await orders_cursor.to_list(length=1000)
+    for o in orders:
+        o["_id"] = str(o["_id"])
+    return orders
+
 @router.get("/{id}", response_model=Order)
 async def get_order(
     id: str,
@@ -86,19 +99,6 @@ async def get_order(
         
     order["_id"] = str(order["_id"])
     return order
-
-@router.get("/all", response_model=List[Order])
-async def get_all_orders(
-    current_admin: Any = Depends(deps.get_current_active_admin)
-) -> Any:
-    """
-    Retrieve all orders (Admin only).
-    """
-    orders_cursor = db.db.orders.find().sort("created_at", -1)
-    orders = await orders_cursor.to_list(length=1000)
-    for o in orders:
-        o["_id"] = str(o["_id"])
-    return orders
 
 @router.patch("/{id}/status", response_model=Order)
 async def update_order_status(
