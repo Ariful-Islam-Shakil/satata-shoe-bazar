@@ -53,6 +53,9 @@ export default function MyOrdersPage() {
   return (
     <div className="bg-gray-50 min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Link href="/profile" className="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-500 mb-6">
+          &larr; Back to Profile
+        </Link>
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-10">My Orders</h1>
 
         {orders.length > 0 ? (
