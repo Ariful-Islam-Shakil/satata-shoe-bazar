@@ -65,6 +65,28 @@ async def get_my_orders(
         o["_id"] = str(o["_id"])
     return orders
 
+@router.get("/{id}", response_model=Order)
+async def get_order(
+    id: str,
+    current_user: Any = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Get order by ID.
+    """
+    if not ObjectId.is_valid(id):
+        raise HTTPException(status_code=400, detail="Invalid order ID")
+        
+    order = await db.db.orders.find_one({"_id": ObjectId(id)})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Check if order belongs to user (or is admin)
+    if order["user_email"] != current_user.email and (not hasattr(current_user, 'role') or current_user.role != "ADMIN"):
+        raise HTTPException(status_code=403, detail="Not authorized to view this order")
+        
+    order["_id"] = str(order["_id"])
+    return order
+
 @router.get("/all", response_model=List[Order])
 async def get_all_orders(
     current_admin: Any = Depends(deps.get_current_active_admin)
