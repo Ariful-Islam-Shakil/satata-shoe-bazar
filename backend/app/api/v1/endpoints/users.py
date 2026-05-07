@@ -1,9 +1,12 @@
 from typing import Any, List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
 from app.db.mongodb import db
 from app.schemas.user import User, UserUpdate
 from app.api import deps
 from bson import ObjectId
+import os
+import uuid
+from datetime import datetime
 
 router = APIRouter()
 
@@ -65,3 +68,56 @@ async def get_wishlist_items(
         p["_id"] = str(p["_id"])
         
     return products
+
+@router.put("/me", response_model=User)
+async def update_user_me(
+    *,
+    user_in: UserUpdate,
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Update own profile.
+    """
+    update_data = {k: v for k, v in user_in.model_dump().items() if v is not None}
+    
+    if "password" in update_data:
+        from app.core import security
+        update_data["password"] = security.get_password_hash(update_data["password"])
+    
+    await db.db.users.update_one(
+        {"email": current_user.email},
+        {"$set": update_data}
+    )
+    
+    updated_user = await db.db.users.find_one({"email": current_user.email})
+    updated_user["_id"] = str(updated_user["_id"])
+    return updated_user
+
+@router.post("/upload-photo")
+async def upload_user_photo(
+    file: UploadFile = File(...),
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Upload profile photo.
+    """
+    # Create directory if it doesn't exist
+    upload_dir = "../frontend/public/user_photos"
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+    
+    # Validate file type
+    extension = file.filename.split(".")[-1].lower()
+    if extension not in ["jpg", "jpeg", "png", "gif"]:
+        raise HTTPException(status_code=400, detail="Invalid image format")
+    
+    # Generate unique filename
+    filename = f"{uuid.uuid4()}.{extension}"
+    file_path = os.path.join(upload_dir, filename)
+    
+    with open(file_path, "wb") as buffer:
+        content = await file.read()
+        buffer.write(content)
+    
+    # Return the relative URL
+    return {"url": f"/user_photos/{filename}"}

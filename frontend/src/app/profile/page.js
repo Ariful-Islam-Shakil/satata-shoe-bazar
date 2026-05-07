@@ -1,11 +1,21 @@
 'use client';
 
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
-import { UserCircleIcon, ShoppingBagIcon, HeartIcon, MapPinIcon, EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
+import { 
+  UserCircleIcon, 
+  ShoppingBagIcon, 
+  HeartIcon, 
+  MapPinIcon, 
+  EnvelopeIcon, 
+  PhoneIcon 
+} from '@heroicons/react/24/outline';
+import ProfileEditModal from '@/components/ProfileEditModal';
 
 export default function ProfilePage() {
-  const { user, loading } = useAuth();
+  const { user, loading, updateUser } = useAuth();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
@@ -34,6 +44,10 @@ export default function ProfilePage() {
     { name: 'Wishlist', icon: HeartIcon, href: '/wishlist', count: `${user.wishlist?.length || 0} items`, color: 'bg-pink-50 text-pink-600' },
   ];
 
+  const handleUpdateProfile = async (data) => {
+    await updateUser(data);
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,8 +58,12 @@ export default function ProfilePage() {
             <div className="px-6 pb-6 relative">
               <div className="flex flex-col sm:flex-row sm:items-end -mt-12 sm:space-x-5">
                 <div className="flex">
-                  <div className="h-24 w-24 rounded-2xl ring-4 ring-white bg-white flex items-center justify-center shadow-md">
-                    <UserCircleIcon className="h-20 w-20 text-gray-300" />
+                  <div className="h-24 w-24 rounded-2xl ring-4 ring-white bg-white flex items-center justify-center shadow-md overflow-hidden">
+                    {user.image ? (
+                      <img src={user.image} alt={user.full_name} className="h-full w-full object-cover" />
+                    ) : (
+                      <UserCircleIcon className="h-20 w-20 text-gray-300" />
+                    )}
                   </div>
                 </div>
                 <div className="mt-6 sm:mt-0 flex-1">
@@ -53,7 +71,10 @@ export default function ProfilePage() {
                   <p className="text-gray-500 font-medium">@{user.username}</p>
                 </div>
                 <div className="mt-6 sm:mt-0 flex space-x-3">
-                  <button className="inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-all">
+                  <button 
+                    onClick={() => setIsEditModalOpen(true)}
+                    className="inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-all"
+                  >
                     Edit Profile
                   </button>
                 </div>
@@ -107,16 +128,26 @@ export default function ProfilePage() {
                     </div>
                     <div className="flex items-start space-x-3 sm:col-span-2">
                       <MapPinIcon className="h-5 w-5 text-gray-400 mt-0.5" />
-                      <div>
-                        <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Default Address</p>
-                        <p className="text-sm font-semibold text-gray-900">{user.address || 'No address saved'}</p>
+                      <div className="flex-1">
+                        <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Saved Addresses</p>
+                        {user.addresses && user.addresses.length > 0 ? (
+                          <div className="space-y-2">
+                            {user.addresses.map((address, index) => (
+                              <div key={index} className="p-3 rounded-xl bg-gray-50 border border-gray-100 text-sm font-semibold text-gray-900 flex justify-between items-center group">
+                                <span>{address}</span>
+                                <span className="text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">Address {index + 1}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm font-semibold text-gray-900">No addresses saved</p>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Recent Activity or Placeholder */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">Account Security</h3>
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
@@ -133,6 +164,14 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      <ProfileEditModal 
+        user={user} 
+        isOpen={isEditModalOpen} 
+        onClose={() => setIsEditModalOpen(false)} 
+        onSave={handleUpdateProfile}
+      />
     </div>
   );
 }
+
