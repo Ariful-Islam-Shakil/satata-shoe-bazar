@@ -168,7 +168,7 @@ export default function ProfileEditModal({ user, isOpen, onClose, onSave }) {
                   id="full_name"
                   value={editData.full_name}
                   onChange={(e) => setEditData({ ...editData, full_name: e.target.value })}
-                  className="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border"
+                  className="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border text-blue-900 font-semibold"
                   placeholder="Enter your full name"
                   required
                 />
@@ -196,7 +196,7 @@ export default function ProfileEditModal({ user, isOpen, onClose, onSave }) {
                           type="text"
                           value={address}
                           onChange={(e) => handleAddressChange(index, e.target.value)}
-                          className="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 pl-10 border"
+                          className="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 pl-10 border text-blue-900 font-semibold"
                           placeholder={`Address ${index + 1}`}
                         />
                       </div>
