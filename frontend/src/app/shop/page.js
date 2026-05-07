@@ -54,7 +54,7 @@ export default function ShopPage() {
                   value={filters.search}
                   onChange={handleFilterChange}
                   placeholder="Search shoes..."
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border text-blue-900 font-semibold"
                 />
               </div>
 
@@ -64,7 +64,7 @@ export default function ShopPage() {
                   name="brand"
                   value={filters.brand}
                   onChange={handleFilterChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border text-blue-900 font-semibold"
                 >
                   <option value="">All Brands</option>
                   <option value="Apex">Apex</option>
@@ -80,7 +80,7 @@ export default function ShopPage() {
                   name="category"
                   value={filters.category}
                   onChange={handleFilterChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border text-blue-900 font-semibold"
                 >
                   <option value="">All Categories</option>
                   <option value="Sneakers">Sneakers</option>
