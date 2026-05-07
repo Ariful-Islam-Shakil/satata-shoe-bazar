@@ -11,6 +11,8 @@ class UserBase(BaseModel):
     full_name: Optional[str] = None
     role: UserRole = UserRole.CUSTOMER
     wishlist: List[str] = []
+    addresses: List[str] = []
+    image: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str
@@ -20,6 +22,8 @@ class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     password: Optional[str] = None
     wishlist: Optional[List[str]] = None
+    addresses: Optional[List[str]] = None
+    image: Optional[str] = None
 
 class User(UserBase):
     id: str = Field(alias="_id")

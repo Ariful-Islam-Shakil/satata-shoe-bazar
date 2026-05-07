@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
+import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -10,12 +11,31 @@ export default function RegisterPage() {
     full_name: '',
     password: '',
     confirm_password: '',
+    image: '',
+    addresses: [''],
   });
   const [error, setError] = useState('');
   const { register } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleAddressChange = (index, value) => {
+    const newAddresses = [...formData.addresses];
+    newAddresses[index] = value;
+    setFormData({ ...formData, addresses: newAddresses });
+  };
+
+  const addAddress = () => {
+    setFormData({ ...formData, addresses: [...formData.addresses, ''] });
+  };
+
+  const removeAddress = (index) => {
+    if (formData.addresses.length > 1) {
+      const newAddresses = formData.addresses.filter((_, i) => i !== index);
+      setFormData({ ...formData, addresses: newAddresses });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -29,6 +49,8 @@ export default function RegisterPage() {
 
     try {
       const { confirm_password, ...registerData } = formData;
+      // Filter out empty addresses
+      registerData.addresses = registerData.addresses.filter(addr => addr.trim() !== '');
       await register(registerData);
     } catch (err) {
       setError(err.response?.data?.detail || 'Registration failed. Please try again.');
@@ -124,6 +146,63 @@ export default function RegisterPage() {
                   onChange={handleChange}
                   className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
                 />
+              </div>
+            </div>
+
+            <div className="border-t border-gray-100 pt-6">
+              <h3 className="text-sm font-semibold text-gray-900 mb-4 uppercase tracking-wider text-center">Optional Information</h3>
+              
+              <div className="mb-4">
+                <label htmlFor="image" className="block text-sm font-medium text-gray-700">
+                  Profile Image URL
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="image"
+                    name="image"
+                    type="text"
+                    placeholder="https://example.com/photo.jpg"
+                    value={formData.image}
+                    onChange={handleChange}
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Delivery Addresses
+                </label>
+                <div className="space-y-3">
+                  {formData.addresses.map((address, index) => (
+                    <div key={index} className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder={`Address ${index + 1}`}
+                        value={address}
+                        onChange={(e) => handleAddressChange(index, e.target.value)}
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                      />
+                      {formData.addresses.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeAddress(index)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                        >
+                          <TrashIcon className="h-5 w-5" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addAddress}
+                    className="mt-2 inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
+                  >
+                    <PlusIcon className="h-4 w-4 mr-1" />
+                    Add Another Address
+                  </button>
+                </div>
               </div>
             </div>
 
