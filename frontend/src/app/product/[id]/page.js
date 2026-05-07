@@ -17,6 +17,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -41,15 +42,41 @@ export default function ProductDetailPage() {
       <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <div className="lg:grid lg:grid-cols-2 lg:gap-x-8 lg:items-start">
           {/* Image gallery */}
-          <div className="flex flex-col">
-            <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg">
+          <div className="flex flex-col-reverse lg:flex-row gap-4 items-start">
+            {/* Thumbnail selector */}
+            {product.images?.length > 1 && (
+              <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto no-scrollbar pb-2 lg:pb-0 w-full lg:w-24 lg:max-h-[500px]">
+                {product.images.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImageIndex(index)}
+                    className={`relative flex-shrink-0 w-20 h-20 lg:w-full lg:h-24 overflow-hidden rounded-lg border-2 transition-all duration-200 ${
+                      selectedImageIndex === index 
+                        ? 'border-indigo-600 ring-2 ring-indigo-600 ring-offset-1' 
+                        : 'border-transparent hover:border-gray-300'
+                    }`}
+                  >
+                    <img
+                      src={image}
+                      alt={`${product.name} ${index + 1}`}
+                      className="h-full w-full object-cover object-center"
+                    />
+                    {selectedImageIndex !== index && (
+                      <div className="absolute inset-0 bg-black/5 hover:bg-transparent transition-colors" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Main image */}
+            <div className="flex-1 w-full aspect-h-1 aspect-w-1 overflow-hidden rounded-xl bg-gray-100 shadow-sm border border-gray-100">
               <img
-                src={product.images[0] || 'https://via.placeholder.com/600x600?text=No+Image'}
+                src={product.images?.[selectedImageIndex] || 'https://via.placeholder.com/600x600?text=No+Image'}
                 alt={product.name}
-                className="h-full w-full object-cover object-center"
+                className="h-full w-full object-cover object-center transition-opacity duration-300"
               />
             </div>
-            {/* Thumbnail selector could go here */}
           </div>
 
           {/* Product info */}
