@@ -34,7 +34,7 @@ export default function WishlistPage() {
   if (!user) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
-        <h2 className="text-2xl font-bold mb-4">Please login to view your wishlist</h2>
+        <h2 className="text-2xl text-red-500 font-bold mb-4">Please login to view your wishlist</h2>
         <Link href="/login" className="bg-indigo-600 text-white px-6 py-2 rounded-md">Login</Link>
       </div>
     );

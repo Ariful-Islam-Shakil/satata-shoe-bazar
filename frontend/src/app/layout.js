@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <CartProvider>
             <Navbar />
-            <main className="flex-grow">
+            <main className="flex-grow bg-gray-100">
               {children}
             </main>
             <Footer />

@@ -1,11 +1,23 @@
 'use client';
 
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import { TrashIcon, MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 
 export default function CartPage() {
+  const { user } = useAuth();
   const { cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <h2 className="text-2xl text-red-500 font-bold mb-4">Please login to view your cart</h2>
+        <Link href="/login" className="bg-indigo-600 text-white px-6 py-2 rounded-md">Login</Link>
+      </div>
+    );
+  }
+
 
   if (cartItems.length === 0) {
     return (
