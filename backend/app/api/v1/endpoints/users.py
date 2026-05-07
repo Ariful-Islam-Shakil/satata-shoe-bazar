@@ -84,6 +84,16 @@ async def update_user_me(
         from app.core import security
         update_data["password"] = security.get_password_hash(update_data["password"])
     
+    # Clean up old photo if it's being replaced and was a custom upload
+    if "image" in update_data and update_data["image"] != current_user.image:
+        if current_user.image and current_user.image.startswith("/user_photos/"):
+            old_path = os.path.join("../frontend/public", current_user.image.lstrip("/"))
+            if os.path.exists(old_path):
+                try:
+                    os.remove(old_path)
+                except Exception as e:
+                    print(f"Failed to delete old photo: {e}")
+
     await db.db.users.update_one(
         {"email": current_user.email},
         {"$set": update_data}

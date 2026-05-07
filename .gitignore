@@ -3,8 +3,8 @@ node_modules
 .next
 .env
 .venv
-backend/__pycache__
-backend/__pycache__/*
+__pycache__/
+
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 plan/
 # dependencies
@@ -16,10 +16,10 @@ plan/
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
-
+*.pyc
 # testing
 /coverage
-
+user_photos
 # next.js
 /.next/
 /out/
