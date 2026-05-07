@@ -77,11 +77,11 @@ export default function AdminOrdersPage() {
                       {order.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-700 font-semibold">
                     <select
                       value={order.status}
                       onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
-                      className="text-xs border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                      className="text-xs border-gray-500 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                     >
                       <option value="Order Received">Received</option>
                       <option value="Packaging">Packaging</option>

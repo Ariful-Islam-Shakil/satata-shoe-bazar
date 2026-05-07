@@ -78,33 +78,33 @@ export default function EditProductPage() {
         <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 shadow rounded-lg">
           <div>
             <label className="block text-sm font-medium text-gray-700">Product Name</label>
-            <input type="text" name="name" required value={formData.name} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" />
+            <input type="text" name="name" required value={formData.name} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border text-blue-900 font-semibold" />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Description</label>
-            <textarea name="description" required rows="3" value={formData.description} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"></textarea>
+            <textarea name="description" required rows="3" value={formData.description} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border text-blue-900 font-semibold"></textarea>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">Price (৳)</label>
-              <input type="number" name="price" required value={formData.price} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" />
+              <input type="number" name="price" required value={formData.price} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border text-blue-900 font-semibold" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Stock</label>
-              <input type="number" name="stock" required value={formData.stock} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" />
+              <input type="number" name="stock" required value={formData.stock} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border text-blue-900 font-semibold" />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">Brand</label>
-              <input type="text" name="brand" required value={formData.brand} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" />
+              <input type="text" name="brand" required value={formData.brand} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border text-blue-900 font-semibold" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Category</label>
-              <select name="category" value={formData.category} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
+              <select name="category" value={formData.category} onChange={handleChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border text-blue-900 font-semibold">
                 <option value="Sneakers">Sneakers</option>
                 <option value="Formal">Formal</option>
                 <option value="Boots">Boots</option>
@@ -115,17 +115,17 @@ export default function EditProductPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Sizes (comma separated)</label>
-            <input type="text" name="sizes" value={formData.sizes} onChange={handleChange} placeholder="40, 41, 42" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" />
+            <input type="text" name="sizes" value={formData.sizes} onChange={handleChange} placeholder="40, 41, 42" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border text-blue-900 font-semibold" />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Colors (comma separated)</label>
-            <input type="text" name="colors" value={formData.colors} onChange={handleChange} placeholder="Black, Brown" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" />
+            <input type="text" name="colors" value={formData.colors} onChange={handleChange} placeholder="Black, Brown" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border text-blue-900 font-semibold" />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Image URLs (comma separated)</label>
-            <input type="text" name="images" value={formData.images} onChange={handleChange} placeholder="http://..., http://..." className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" />
+            <input type="text" name="images" value={formData.images} onChange={handleChange} placeholder="http://..., http://..." className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border text-blue-900 font-semibold" />
           </div>
 
           <div className="flex justify-end space-x-3">

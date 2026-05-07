@@ -173,7 +173,7 @@ export default function CheckoutPage() {
                         required
                         value={formData.full_name}
                         onChange={handleChange}
-                        className="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 pl-10 border"
+                        className="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 pl-10 border text-blue-900 font-semibold"
                         placeholder="John Doe"
                       />
                     </div>
@@ -189,7 +189,7 @@ export default function CheckoutPage() {
                         required
                         value={formData.phone}
                         onChange={handleChange}
-                        className="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 pl-10 border"
+                        className="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 pl-10 border text-blue-900 font-semibold"
                         placeholder="+880123456789"
                       />
                     </div>
@@ -204,7 +204,7 @@ export default function CheckoutPage() {
                       value={formData.address}
                       onChange={handleChange}
                       readOnly={!isNewAddress}
-                      className={`block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border ${!isNewAddress ? 'bg-gray-50' : ''}`}
+                      className={`block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border text-blue-900 font-semibold ${!isNewAddress ? 'bg-gray-50' : ''}`}
                       placeholder="House No, Road, Area..."
                     />
                   </div>
@@ -217,7 +217,7 @@ export default function CheckoutPage() {
                       required
                       value={formData.city}
                       onChange={handleChange}
-                      className="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border"
+                      className="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border text-blue-900 font-semibold"
                     />
                   </div>
 
@@ -227,7 +227,7 @@ export default function CheckoutPage() {
                       name="region"
                       value={formData.region}
                       onChange={handleChange}
-                      className="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border"
+                      className="block w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border text-blue-900 font-semibold"
                     >
                       <option value="Dhaka">Dhaka</option>
                       <option value="Outside Dhaka">Outside Dhaka</option>

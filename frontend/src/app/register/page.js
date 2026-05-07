@@ -92,7 +92,7 @@ export default function RegisterPage() {
                   required
                   value={formData.full_name}
                   onChange={handleChange}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border text-blue-900 font-semibold"
                 />
               </div>
             </div>
@@ -110,7 +110,7 @@ export default function RegisterPage() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border text-blue-900 font-semibold"
                 />
               </div>
             </div>
@@ -127,7 +127,7 @@ export default function RegisterPage() {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border text-blue-900 font-semibold"
                 />
               </div>
             </div>
@@ -144,7 +144,7 @@ export default function RegisterPage() {
                   required
                   value={formData.confirm_password}
                   onChange={handleChange}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border text-blue-900 font-semibold"
                 />
               </div>
             </div>
@@ -164,7 +164,7 @@ export default function RegisterPage() {
                     placeholder="https://example.com/photo.jpg"
                     value={formData.image}
                     onChange={handleChange}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border text-blue-900 font-semibold"
                   />
                 </div>
               </div>
@@ -181,7 +181,7 @@ export default function RegisterPage() {
                         placeholder={`Address ${index + 1}`}
                         value={address}
                         onChange={(e) => handleAddressChange(index, e.target.value)}
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border text-blue-900 font-semibold"
                       />
                       {formData.addresses.length > 1 && (
                         <button
