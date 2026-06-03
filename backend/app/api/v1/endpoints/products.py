@@ -8,6 +8,38 @@ from datetime import datetime
 import os
 import uuid
 import json
+import cloudinary
+import cloudinary.uploader
+from app.core.config import settings
+
+cloudinary.config(
+    cloud_name=settings.CLOUDINARY_CLOUD_NAME,
+    api_key=settings.CLOUDINARY_API_KEY,
+    api_secret=settings.CLOUDINARY_API_SECRET,
+    secure=True
+)
+
+def extract_public_id(url: str) -> Optional[str]:
+    """
+    Extract the public ID from a Cloudinary URL.
+    """
+    if "res.cloudinary.com" not in url:
+        return None
+    try:
+        parts = url.split("image/upload/")
+        if len(parts) < 2:
+            return None
+        path = parts[1]
+        path_segments = path.split("/")
+        # Skip the version segment (e.g. v1780467853)
+        if path_segments[0].startswith("v") and any(char.isdigit() for char in path_segments[0]):
+            path_segments = path_segments[1:]
+        public_id_with_ext = "/".join(path_segments)
+        public_id = public_id_with_ext.rsplit(".", 1)[0]
+        return public_id
+    except Exception as e:
+        print(f"Error extracting public_id: {e}")
+        return None
 
 router = APIRouter()
 
@@ -82,25 +114,24 @@ async def create_product(
     """
     Create new product (Admin only).
     """
-    # Save images
-    upload_dir = "../frontend/public/photos"
-    if not os.path.exists(upload_dir):
-        os.makedirs(upload_dir)
-        
+    # Save images to Cloudinary
     image_urls = []
     for file in files:
         extension = file.filename.split(".")[-1].lower()
         if extension not in ["jpg", "jpeg", "png", "gif", "webp"]:
-            continue # Or raise error
+            continue
         
-        filename = f"{uuid.uuid4()}.{extension}"
-        file_path = os.path.join(upload_dir, filename)
-        
-        with open(file_path, "wb") as buffer:
-            content = await file.read()
-            buffer.write(content)
-        
-        image_urls.append(f"/photos/{filename}")
+        try:
+            result = cloudinary.uploader.upload(
+                file.file,
+                folder="satata-shoe-bazar/products"
+            )
+            image_urls.append(result["secure_url"])
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to upload image {file.filename} to Cloudinary: {str(e)}"
+            )
 
     product_dict = {
         "name": name,
@@ -166,16 +197,22 @@ async def delete_product(
     if not deleted_product:
         raise HTTPException(status_code=404, detail="Product not found")
     
-    # Delete images from filesystem
+    # Delete images from Cloudinary or filesystem
     if "images" in deleted_product:
         for img_url in deleted_product["images"]:
-            if img_url.startswith("/photos/"):
+            public_id = extract_public_id(img_url)
+            if public_id:
+                try:
+                    cloudinary.uploader.destroy(public_id)
+                except Exception as e:
+                    print(f"Failed to delete photo {img_url} from Cloudinary: {e}")
+            elif img_url.startswith("/photos/"):
                 file_path = os.path.join("../frontend/public", img_url.lstrip("/"))
                 if os.path.exists(file_path):
                     try:
                         os.remove(file_path)
                     except Exception as e:
-                        print(f"Failed to delete photo {file_path}: {e}")
+                        print(f"Failed to delete local photo {file_path}: {e}")
         
     deleted_product["_id"] = str(deleted_product["_id"])
     return deleted_product

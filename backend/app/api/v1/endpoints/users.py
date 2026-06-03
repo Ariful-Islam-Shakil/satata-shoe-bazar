@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
 from app.db.mongodb import db
 from app.schemas.user import User, UserUpdate
@@ -7,6 +7,38 @@ from bson import ObjectId
 import os
 import uuid
 from datetime import datetime
+import cloudinary
+import cloudinary.uploader
+from app.core.config import settings
+
+cloudinary.config(
+    cloud_name=settings.CLOUDINARY_CLOUD_NAME,
+    api_key=settings.CLOUDINARY_API_KEY,
+    api_secret=settings.CLOUDINARY_API_SECRET,
+    secure=True
+)
+
+def extract_public_id(url: str) -> Optional[str]:
+    """
+    Extract the public ID from a Cloudinary URL.
+    """
+    if "res.cloudinary.com" not in url:
+        return None
+    try:
+        parts = url.split("image/upload/")
+        if len(parts) < 2:
+            return None
+        path = parts[1]
+        path_segments = path.split("/")
+        # Skip the version segment (e.g. v1780467853)
+        if path_segments[0].startswith("v") and any(char.isdigit() for char in path_segments[0]):
+            path_segments = path_segments[1:]
+        public_id_with_ext = "/".join(path_segments)
+        public_id = public_id_with_ext.rsplit(".", 1)[0]
+        return public_id
+    except Exception as e:
+        print(f"Error extracting public_id: {e}")
+        return None
 
 router = APIRouter()
 
@@ -86,13 +118,20 @@ async def update_user_me(
     
     # Clean up old photo if it's being replaced and was a custom upload
     if "image" in update_data and update_data["image"] != current_user.image:
-        if current_user.image and current_user.image.startswith("/user_photos/"):
-            old_path = os.path.join("../frontend/public", current_user.image.lstrip("/"))
-            if os.path.exists(old_path):
+        if current_user.image:
+            public_id = extract_public_id(current_user.image)
+            if public_id:
                 try:
-                    os.remove(old_path)
+                    cloudinary.uploader.destroy(public_id)
                 except Exception as e:
-                    print(f"Failed to delete old photo: {e}")
+                    print(f"Failed to delete old photo from Cloudinary: {e}")
+            elif current_user.image.startswith("/user_photos/"):
+                old_path = os.path.join("../frontend/public", current_user.image.lstrip("/"))
+                if os.path.exists(old_path):
+                    try:
+                        os.remove(old_path)
+                    except Exception as e:
+                        print(f"Failed to delete old photo: {e}")
 
     await db.db.users.update_one(
         {"email": current_user.email},
@@ -111,23 +150,19 @@ async def upload_user_photo(
     """
     Upload profile photo.
     """
-    # Create directory if it doesn't exist
-    upload_dir = "../frontend/public/user_photos"
-    if not os.path.exists(upload_dir):
-        os.makedirs(upload_dir)
-    
     # Validate file type
     extension = file.filename.split(".")[-1].lower()
-    if extension not in ["jpg", "jpeg", "png", "gif"]:
+    if extension not in ["jpg", "jpeg", "png", "gif", "webp"]:
         raise HTTPException(status_code=400, detail="Invalid image format")
     
-    # Generate unique filename
-    filename = f"{uuid.uuid4()}.{extension}"
-    file_path = os.path.join(upload_dir, filename)
-    
-    with open(file_path, "wb") as buffer:
-        content = await file.read()
-        buffer.write(content)
-    
-    # Return the relative URL
-    return {"url": f"/user_photos/{filename}"}
+    try:
+        result = cloudinary.uploader.upload(
+            file.file,
+            folder="satata-shoe-bazar/users"
+        )
+        return {"url": result["secure_url"]}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to upload user photo to Cloudinary: {str(e)}"
+        )
